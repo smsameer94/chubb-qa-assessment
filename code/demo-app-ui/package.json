@@ -12,6 +12,7 @@
     "generate:stubs": "python3 ../../scripts/generate-wiremock-stubs.py ../bff-service/src/main/resources/openapi/bff-api.yml mocks/bff-stubs bff",
     "mock:bff": "./scripts/start-wiremock.sh 8080",
     "test": "vitest run",
+    "test:integration": "node --test --test-concurrency=1 tests/integration/claims-api.integration.mjs",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
   },
