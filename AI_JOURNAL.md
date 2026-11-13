@@ -27,3 +27,6 @@ This journal is a retrospective summary of the chat and observed tool/test outpu
 
 ## Human sign-off still needed
 Read each test and defect description, run or inspect the documented commands, and be able to explain the trade-offs. No candidate challenge or override beyond what is recorded above is claimed. If sharing this journal, retain this disclosure rather than presenting AI reasoning as independently performed candidate review.
+
+## Final verification and audit
+At the user's request, AI reran frontend and real API suites, checked health endpoints, executed a Chrome browser journey using Playwright directly, and ran TypeScript, lint and Playwright discovery. The journey passed ten sequential checkpoints. Static checks and missing Playwright scaffolding were recorded, not repaired. Docker access prevented fresh Java runs in that pass. The final requirement audit and QA report were added to the package; prior backend results are identified as user-executed historical evidence.
