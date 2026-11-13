@@ -16,6 +16,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
+import com.example.demo.domain.claim.events.ClaimSubmitted;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -41,6 +43,9 @@ class CreateClaimUseCaseTest {
 
     @Mock
     private Counter mockCounter;
+
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private CreateClaimUseCase useCase;
@@ -108,9 +113,11 @@ class CreateClaimUseCaseTest {
 
         Claim result = useCase.execute(command);
 
-        assertThat(result.getDomainEvents()).isNotEmpty();
-        assertThat(result.getDomainEvents())
-                .anyMatch(event -> event.getClass().getSimpleName().equals("ClaimSubmitted"));
+        var eventCaptor = org.mockito.ArgumentCaptor.forClass(ClaimSubmitted.class);
+        verify(eventPublisher).publishEvent(eventCaptor.capture());
+        assertThat(eventCaptor.getValue().claimId()).isEqualTo(result.getClaimId());
+        assertThat(eventCaptor.getValue().userId()).isEqualTo(userId);
+        assertThat(result.getDomainEvents()).isEmpty();
     }
 
     @Test
@@ -131,5 +138,33 @@ class CreateClaimUseCaseTest {
         assertThat(result.getStatus()).isEqualTo(ClaimStatus.SUBMITTED);
         assertThat(result.getCreatedAt()).isNotNull();
         assertThat(result.getUpdatedAt()).isNotNull();
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings = {"0", "-0.01", "1000000.01"})
+    void invalidAmountCannotBeSavedOrPublished(String amount) {
+        UUID userId = UUID.randomUUID();
+        when(userRepository.findById(UserId.of(userId))).thenReturn(Optional.of(mock(User.class)));
+        var command = ClaimTestBuilder.aClaim().withUserId(userId)
+                .withClaimAmount(new BigDecimal(amount)).toCommand();
+
+        assertThatThrownBy(() -> useCase.execute(command))
+                .isInstanceOf(com.example.demo.domain.claim.InvalidClaimException.class);
+        verifyNoInteractions(claimRepository, eventPublisher);
+        verify(mockCounter, never()).increment();
+    }
+
+    @Test
+    void cdcModeSavesClaimWithoutPublishingDirectEvent() {
+        org.springframework.test.util.ReflectionTestUtils.setField(useCase, "cdcEnabled", true);
+        UUID userId = UUID.randomUUID();
+        when(userRepository.findById(UserId.of(userId))).thenReturn(Optional.of(mock(User.class)));
+        when(claimRepository.save(any(Claim.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Claim result = useCase.execute(ClaimTestBuilder.aClaim().withUserId(userId).toCommand());
+
+        verify(claimRepository).save(result);
+        verifyNoInteractions(eventPublisher);
+        verify(mockCounter).increment();
     }
 }

@@ -15,6 +15,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -32,6 +33,7 @@ class UpdateClaimStatusUseCaseTest {
     private UserRepository userRepository;
     private MeterRegistry meterRegistry;
     private UpdateClaimStatusUseCase useCase;
+    private ApplicationEventPublisher eventPublisher;
 
     private static final UUID CLAIM_ID = UUID.randomUUID();
     private static final UUID ADMIN_USER_ID = UUID.randomUUID();
@@ -42,7 +44,9 @@ class UpdateClaimStatusUseCaseTest {
         claimRepository = mock(ClaimRepository.class);
         userRepository = mock(UserRepository.class);
         meterRegistry = new SimpleMeterRegistry();
-        useCase = new UpdateClaimStatusUseCase(claimRepository, userRepository, meterRegistry);
+        eventPublisher = mock(ApplicationEventPublisher.class);
+        useCase = new UpdateClaimStatusUseCase(claimRepository, userRepository, meterRegistry,
+                eventPublisher);
     }
 
     // TC-031: Use case orchestration logic tested with mocked repositories
@@ -65,6 +69,13 @@ class UpdateClaimStatusUseCaseTest {
         assertNotNull(result);
         assertEquals(ClaimStatus.UNDER_REVIEW, result.getStatus());
         verify(claimRepository).save(claim);
+        var eventCaptor = org.mockito.ArgumentCaptor.forClass(
+                com.example.demo.domain.claim.events.ClaimStatusChanged.class);
+        verify(eventPublisher).publishEvent(eventCaptor.capture());
+        assertEquals(CLAIM_ID, eventCaptor.getValue().claimId());
+        assertEquals(ClaimStatus.SUBMITTED, eventCaptor.getValue().oldStatus());
+        assertEquals(ClaimStatus.UNDER_REVIEW, eventCaptor.getValue().newStatus());
+        assertTrue(result.getDomainEvents().isEmpty());
     }
 
     // TC-058: Non-admin user cannot update status (throws UnauthorizedException)
@@ -78,7 +89,7 @@ class UpdateClaimStatusUseCaseTest {
 
         // Act & Assert
         assertThrows(UnauthorizedException.class, () -> useCase.execute(command));
-        verify(claimRepository, never()).save(any());
+        verifyNoInteractions(claimRepository, eventPublisher);
     }
 
     // TC-059: Claim not found throws ClaimNotFoundException
@@ -110,6 +121,8 @@ class UpdateClaimStatusUseCaseTest {
         // Act & Assert
         assertThrows(InvalidStatusTransitionException.class, () -> useCase.execute(command));
         verify(claimRepository, never()).save(any());
+        verifyNoInteractions(eventPublisher);
+        assertEquals(ClaimStatus.CLOSED, claim.getStatus());
     }
 
     @Test
@@ -121,6 +134,7 @@ class UpdateClaimStatusUseCaseTest {
 
         // Act & Assert
         assertThrows(UnauthorizedException.class, () -> useCase.execute(command));
+        verifyNoInteractions(claimRepository, eventPublisher);
     }
 
     private User createAdminUser(UUID userId) {
