@@ -75,3 +75,6 @@ The host Node route was executed; this equivalent container command is provided 
 
 ## Evidence and limits
 TEST_STRATEGY.md lists results and exclusions. BUGS.md gives reproductions. AI_JOURNAL.md describes actual AI use. WALKTHROUGH.md prepares the presentation. No remote Git repository has been created or published. The supplied local Git history contains a pristine import and logical subsequent changes, committed after implementation without backdated timestamps.
+
+## Reusable browser suite added
+The original missing Playwright setup reference has been removed. Five independent tests with shared fixtures and page objects are now available. See PLAYWRIGHT_GUIDE.md for installation, execution, data handling and the verified five-pass Chrome result. The suite uses the already running Docker app.

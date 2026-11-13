@@ -1,41 +1,32 @@
 import { defineConfig, devices } from '@playwright/test';
 
+// The normal Docker Compose stack must already be running.
 export default defineConfig({
   testDir: './tests/e2e',
-  fullyParallel: true,
+  fullyParallel: false,
   forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 1 : 0,
-  workers: process.env.CI ? 1 : undefined,
-  timeout: 30_000,
+  retries: 0,
+  workers: 1,
+  timeout: 90_000,
+  expect: { timeout: 15_000 },
   reporter: [
-    ['html', { outputFolder: 'playwright-report' }],
+    ['line'],
+    ['html', { outputFolder: 'playwright-report', open: 'never' }],
     ['junit', { outputFile: 'playwright-report/results.xml' }],
   ],
   use: {
-    baseURL: 'http://localhost:3001',
-    trace: 'on-first-retry',
+    baseURL: process.env.BASE_URL || 'http://localhost:3001',
+    actionTimeout: 20_000,
+    navigationTimeout: 60_000,
+    trace: 'retain-on-failure',
+    screenshot: 'only-on-failure',
   },
-  globalSetup: './tests/e2e/global-setup.ts',
-  projects: [
-    {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+  projects: [{
+    name: 'chromium',
+    use: {
+      ...devices['Desktop Chrome'],
+      viewport: { width: 1440, height: 1000 },
+      ...(process.env.BROWSER_CHANNEL ? { channel: process.env.BROWSER_CHANNEL } : {}),
     },
-    ...(process.env.CI
-      ? [
-          {
-            name: 'firefox',
-            use: { ...devices['Desktop Firefox'] },
-          },
-        ]
-      : []),
-  ],
-  webServer: {
-    command: process.env.CI
-      ? 'npm run build && npm run start -- --port 3001'
-      : 'npm run dev -- --port 3001',
-    url: 'http://localhost:3001',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  },
+  }],
 });

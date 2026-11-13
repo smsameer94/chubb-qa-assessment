@@ -50,3 +50,6 @@ The candidate performed setup commands and manual checks guided by AI, supplied 
 
 ## Final verification addendum
 The later QA verification also ran a real Chrome browser journey with ten sequential checkpoints passing, TypeScript with seven diagnostics, ESLint with 19 errors and 14 warnings, and Playwright discovery which failed on the missing setup file. This browser exploration does not supply a committed Playwright suite. See QA_REPORT.md and FINAL_AUDIT.md for complete scope and remaining obligations.
+
+## Reusable Playwright suite now verified
+The previously excluded reusable browser automation is now implemented. Five independent tests passed on installed Chrome: protected-route redirect, incorrect credentials, negative amount validation, short-description validation, and the claimant/admin saved-status journey. Tests share fixtures and page objects and use real services. PLAYWRIGHT_GUIDE.md documents execution and exclusions. This supersedes earlier statements that browser E2E was absent; messaging and other exclusions remain. Full frontend, API, Java and static-check results remain their previously recorded runs.

@@ -236,3 +236,5 @@ docker compose -f docker-compose.apps.yml up --build --pull never ui
 ## Assessment submission
 
 Start with [TEST_STRATEGY.md](TEST_STRATEGY.md), [RUN_GUIDE.md](RUN_GUIDE.md), [BUGS.md](BUGS.md), [AI_JOURNAL.md](AI_JOURNAL.md) and [WALKTHROUGH.md](WALKTHROUGH.md). These assessment notes describe the verified scope and results and clarify discrepancies in the original scaffold documentation.
+
+Browser automation is now provided in code/demo-app-ui/tests/e2e. See [PLAYWRIGHT_GUIDE.md](PLAYWRIGHT_GUIDE.md) for the five-test suite and verified execution details.

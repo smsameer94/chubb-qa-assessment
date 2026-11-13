@@ -50,3 +50,6 @@ The user asked for meaningful frontend component and real-service integration co
 
 
 The API helper was corrected during test development to track rotated XSRF-TOKEN cookies after each response. Stale test-client CSRF headers initially caused spurious HTTP 403 responses; this was a test harness defect, not an application finding.
+
+## Browser coverage subsequently added
+Five independent Playwright tests are now committed and passed on installed Chrome. Shared fixtures register unique claimants and isolate sessions; page objects own login, claimant and administrator interactions. See PLAYWRIGHT_GUIDE.md. The earlier API-only coverage limit describes the previous state, not the current suite. Real-time event delivery remains untested.

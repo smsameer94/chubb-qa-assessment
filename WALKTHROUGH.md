@@ -50,3 +50,6 @@ Use this as a guide, not a claim that you performed steps you did not. Explain t
 - Know the distinction between mocks, API integration and browser E2E.
 - Review the generated code and say honestly if a design choice was AI-proposed.
 - Ask the recruiter for submission instructions and whether setup time counts toward the assessment cap; the brief leaves submission details TBD.
+
+## Updated browser demonstration
+The reusable suite is now present. Use PLAYWRIGHT_GUIDE.md to run npm.cmd run test:e2e from code/demo-app-ui after starting the stack. Demonstrate the fifth test: fresh claimant submits, administrator confirms Under Review, claimant reloads and sees the status. Show the shared account/session fixtures and the three page objects to explain DRY and separation of responsibilities. Five tests passed on Chrome. Earlier answers describing missing browser automation are superseded; API regression failures and remaining exclusions still apply. Keep the presentation within its existing time allocation by shortening other demos.

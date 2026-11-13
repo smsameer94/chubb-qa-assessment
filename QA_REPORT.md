@@ -84,3 +84,6 @@ node node_modules/@playwright/test/cli.js test --list
 ```
 
 The first command uses Node 24's native config loader for this restricted Windows execution environment. All evidence files are saved beside this report. Review findings before representing the application or the entire suite as passing.
+
+## Subsequent reusable browser suite verification
+Following this report, the user requested reusable Playwright tests. The missing setup reference was removed and five independent tests were added with shared fixtures and page objects. The final complete run passed all five on installed Chrome without retries in 19.4 seconds. Targeted lint passed. No TypeScript diagnostics were reported in the new Playwright files; existing errors elsewhere remain. The prior missing-scaffold finding is resolved. Earlier report data remains a historical snapshot; API defects and theme/static issues are not claimed fixed. See PLAYWRIGHT_GUIDE.md and saved test-results/playwright-results.xml.
