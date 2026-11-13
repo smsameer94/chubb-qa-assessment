@@ -32,3 +32,8 @@ venv/
 
 # MyPy
 .mypy_cache/
+
+# Local build and dependency outputs
+**/target/
+**/node_modules/
+**/.next/

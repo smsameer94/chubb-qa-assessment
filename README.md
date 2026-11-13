@@ -232,3 +232,7 @@ docker compose -f docker-compose.apps.yml up --build --pull never claims-service
 docker compose -f docker-compose.apps.yml up --build --pull never bff-service
 docker compose -f docker-compose.apps.yml up --build --pull never ui
 ```
+
+## Assessment submission
+
+Start with [TEST_STRATEGY.md](TEST_STRATEGY.md), [RUN_GUIDE.md](RUN_GUIDE.md), [BUGS.md](BUGS.md), [AI_JOURNAL.md](AI_JOURNAL.md) and [WALKTHROUGH.md](WALKTHROUGH.md). These assessment notes describe the verified scope and results and clarify discrepancies in the original scaffold documentation.
